@@ -1,0 +1,134 @@
+﻿@using Cowell.eWebNet.Apps.SiteManager.Models.PassengerService
+@model QuestionDetailViewModel
+@{
+    Layout = "~/Views/Shared/_MasterFrameLayout.cshtml";
+}
+@using (Html.BeginForm("QuestionDetail", "PassengerService", FormMethod.Post, htmlAttributes: new { @class = "form-horizontal", id = "frmQuestionDetail" }))
+{
+    <input type="hidden" id="hdnServiceNo" name="ServiceNo" value="@Model.ServiceNo" />
+    <div class="container-fluid">
+        <input id="processType" type="hidden" value="@ViewBag.processType" />
+        <div i class="col-md-6 col-md-push-3 col-sm-8 col-sm-push-2">
+            <div class="panel panel-primary">
+                <div class="panel-heading clearfix">
+                    <div class="panel-title pull-left">
+                        <i class="fa fa-th" aria-hidden="true"></i>&nbsp;問卷調查
+                    </div>
+                    <div class="pull-right">
+                        <button class="btn btn-sm btnBack"><i class="fa fa-backward"></i>&nbsp;回上頁</button>
+                    </div>
+                </div>
+                <div class="panel-body">
+
+                    @if (ViewBag.DataIsNull != null)
+                    {
+                        <div class="form-group row" style="text-align:center;">
+                            <label>目前尚未有問卷調查&nbsp;</label>
+                        </div>
+                    }
+                    else
+                    {
+
+                        <div class="form-group row">
+                            <label class="col-md-offset-4 col-sm-offset-4 col-xs-offset-4 control-label">行程名稱 ：@Model.Result.QuestionTitle&nbsp;</label>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-offset-4 col-sm-offset-4 col-xs-offset-4 control-label">問券效期 ：@Model.Result.QuestionValidBeginDate -@Model.Result.QuestionValidEndDate&nbsp;</label>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-offset-4 col-sm-offset-4 col-xs-offset-4 control-label">填寫人數 ：@Model.Result.QuestionAnswerCount&nbsp;</label>
+                        </div>
+
+                        foreach (var statistic in Model.Result.Statistics)
+                        {
+                            int answer1 = 0;
+                            int answer2 = 0;
+                            int answer3 = 0;
+                            int answer4 = 0;
+                            int answer5 = 0;
+
+                            foreach (var ans in statistic.QuestionAnswerList)
+                            {
+                                switch (ans.Key)
+                                {
+                                    case 1:
+                                        answer1 = ans.Value;
+                                        break;
+                                    case 2:
+                                        answer2 = ans.Value;
+                                        break;
+                                    case 3:
+                                        answer3 = ans.Value;
+                                        break;
+                                    case 4:
+                                        answer4 = ans.Value;
+                                        break;
+                                    case 5:
+                                        answer5 = ans.Value;
+                                        break;
+                                }
+                            }
+                            string answerList = string.Format("很好 ({0}) / 好 ({1}) / 普通 ({2}) / 差 ({3}) / 很差 ({4})", answer5, answer4, answer3, answer2, answer1);
+
+
+                            <div class="form-group row">
+                                <label class="col-md-offset-4 col-sm-offset-4 col-xs-offset-4 control-label">@statistic.QuestionTopicDescription&nbsp;&nbsp;</label>
+                                @{
+                                    int index = 0;
+                                    for (int i = 0; i < statistic.Average; i++)
+                                    {
+                                        index = i;
+                                        <i class="fa fa fa-star" aria-hidden="true"></i>
+                                    }
+                                    while (true)
+                                    {
+                                        if (index >= 9)
+                                        {
+                                            break;
+                                        }
+                                        <i class="fa fa fa-star-o" aria-hidden="true"></i>
+                                        index++;
+                                    }
+                                }
+                                <div class="form-group row">
+                                    <label class="col-md-offset-4 col-sm-offset-4 col-xs-offset-4 control-label">@answerList&nbsp;</label>
+                                </div>
+                            </div>
+                               }
+                                    foreach (var data in Model.Result.Data)
+                                    {
+                                        <div class="form-group row">
+                                            <table class="table table-striped table-hover">
+                                                <tr>
+                                                    <th colspan="2" style="text-align:center;"><label>所有評論&nbsp;</label></th>
+                                                </tr>
+                                                <tr>
+                                                    <td style="text-align:center;" class="col-md-6"><label>@data.UserName&nbsp;@data.AnswerDate&nbsp;</label></td>
+                                                    <td style="text-align:center;">@data.AnswerContent</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                        }
+                                    }
+
+                </div>
+                <div class="panel-footer">
+                    <div class="form-group row">
+                        <div class="col-sm-12 text-center">
+                            <button type="button" class="ewui-btn-cancel btnBack">關閉</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+                  }
+
+<script>
+    $(document).ready(function () {
+        $('.btnBack').click(function () {
+            var serviceNo = $('#hdnServiceNo').val();
+            location.href = '@Url.Action("List", "PassengerService")' + '?page=1';
+        });
+    })
+</script>
